@@ -10,6 +10,11 @@ interface Question {
   pinyin: string | string[]
 }
 
+interface History {
+  question: Question
+  correct: boolean
+}
+
 enum EditorState {
   Question,
   AnswerCorrect,
@@ -40,9 +45,12 @@ export default function HomePage() {
 
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const [total, setTotal] = useState(0)
-  const [correct, setCorrect] = useState(0)
-  const [incorrect, setIncorrect] = useState(0)
+  const [history, setHistory] = useState<History[]>([])
+  const [total, correct, incorrect] = [
+    history.length,
+    history.filter((item) => item.correct === true).length,
+    history.filter((item) => item.correct === false).length,
+  ]
 
   const [playCorrect] = useSound('/assets/correct.wav')
   const [playIncorrect] = useSound('/assets/incorrect.wav')
@@ -67,9 +75,15 @@ export default function HomePage() {
         if ( inputRef.current === null ) return
         if ( answer === '' && editorState === EditorState.Question ) return
         if ( editorState === EditorState.Question) {
-          setTotal((total) => total + 1)
-          if ( answer === question?.roman ) {
-            setCorrect((correct) => correct + 1)
+          if ( question === undefined ) return
+          if ( answer === question.roman ) {
+            setHistory((history) => [
+              ...history, 
+              {
+                question: question,
+                correct: true
+              }
+            ])
             setQuestionList(
               (questionList) =>
               questionList.filter((item) => item.chinese !== question.chinese)
@@ -77,7 +91,13 @@ export default function HomePage() {
             setEditorState(EditorState.AnswerCorrect)
             playCorrect()
           } else {
-            setIncorrect((incorrect) => incorrect + 1)
+            setHistory((history) => [
+              ...history, 
+              {
+                question: question,
+                correct: false
+              }
+            ])
             setEditorState(EditorState.AnswerIncorrect)
             setAnswer('')
             playIncorrect()
@@ -118,9 +138,7 @@ export default function HomePage() {
           type="button" 
           className="transition-all shadow-sm font-medium border-2 border-green-600 bg-green-500 text-white py-3 px-6 rounded-xl hover:-translate-y-1"
           onClick={() => {
-            setTotal(0)
-            setCorrect(0)
-            setIncorrect(0)
+            setHistory([])
             setQuestionList(QUESTIONS)
             setQuestion(getRandomQuestion())
             setEditorState(EditorState.Question)
