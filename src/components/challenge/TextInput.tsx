@@ -15,6 +15,7 @@ export const TextInput = ({ question, editorState, language, onCorrect, onIncorr
     if ( editorState !== EditorState.Question )
       return
     inputRef.current?.focus()
+    setAnswer('')
   }, [editorState, inputRef])
   
   useEffect(() => {
@@ -24,7 +25,7 @@ export const TextInput = ({ question, editorState, language, onCorrect, onIncorr
           if ( answer === '' && editorState === EditorState.Question ) return
           if ( editorState === EditorState.Question) {
             if ( question === undefined ) return
-            if ( answer === question.roman ) {
+            if ( Array.isArray(question.roman) ? question.roman.includes(answer) : answer === question.roman ) {
               onCorrect()
             } else {
               onIncorrect()

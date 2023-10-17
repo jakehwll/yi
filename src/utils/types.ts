@@ -1,5 +1,7 @@
+
+
 export interface Question {
-  chinese: string;
+  chinese: string | string[];
   roman: string | string[];
   pinyin: string | string[];
 }

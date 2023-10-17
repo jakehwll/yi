@@ -10,7 +10,7 @@ const LANGUAGE: 'en' | 'zh' = 'en'
 
 const QUESTIONS: Question[] = [
   { chinese: '一', roman: 'yi', pinyin: 'yī' },
-  { chinese: '二', roman: 'er', pinyin: 'èr / liǎng' },
+  { chinese: '二', roman: ['er', 'liang'], pinyin: ['èr', 'liǎng'] },
   { chinese: '三', roman: 'san', pinyin: 'sān' },
   { chinese: '四', roman: 'si', pinyin: 'sì' },
   { chinese: '五', roman: 'wu', pinyin: 'wǔ' },
@@ -179,7 +179,11 @@ export default function HomePage() {
                   </>
                 )}
               </div>
-              <button type="submit" className="transition-all shadow-sm font-medium border-2 border-blue-600 bg-blue-500 text-white py-3 px-6 rounded-xl hover:-translate-y-1">
+              <button 
+                type="submit" 
+                onClick={() => onNext()}
+                className="transition-all shadow-sm font-medium border-2 border-blue-600 bg-blue-500 text-white py-3 px-6 rounded-xl hover:-translate-y-1"
+              >
                 Next
               </button>
             </div>
