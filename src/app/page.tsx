@@ -5,9 +5,9 @@ import { useEffect, useRef, useState } from "react";
 import useSound from 'use-sound';
 
 interface Question {
-  question: string
-  answer: string
-  pinyin: string
+  chinese: string
+  roman: string | string[],
+  pinyin: string | string[]
 }
 
 enum EditorState {
@@ -20,16 +20,16 @@ enum EditorState {
 const LANGUAGE: 'en' | 'zh' = 'en'
 
 const QUESTIONS: Question[] = [
-  { question: '一', answer: 'yi', pinyin: 'yī' },
-  { question: '二', answer: 'er', pinyin: 'èr / liǎng' },
-  { question: '三', answer: 'san', pinyin: 'sān' },
-  { question: '四', answer: 'si', pinyin: 'sì' },
-  { question: '五', answer: 'wu', pinyin: 'wǔ' },
-  { question: '六', answer: 'liu', pinyin: 'liù' },
-  { question: '七', answer: 'qi', pinyin: 'qī' },
-  { question: '八', answer: 'ba', pinyin: 'bā' },
-  { question: '九', answer: 'jiu', pinyin: 'jiǔ' },
-  { question: '十', answer: 'shi', pinyin: 'shí' }
+  { chinese: '一', roman: 'yi', pinyin: 'yī' },
+  { chinese: '二', roman: 'er', pinyin: 'èr / liǎng' },
+  { chinese: '三', roman: 'san', pinyin: 'sān' },
+  { chinese: '四', roman: 'si', pinyin: 'sì' },
+  { chinese: '五', roman: 'wu', pinyin: 'wǔ' },
+  { chinese: '六', roman: 'liu', pinyin: 'liù' },
+  { chinese: '七', roman: 'qi', pinyin: 'qī' },
+  { chinese: '八', roman: 'ba', pinyin: 'bā' },
+  { chinese: '九', roman: 'jiu', pinyin: 'jiǔ' },
+  { chinese: '十', roman: 'shi', pinyin: 'shí' }
 ]
 
 export default function HomePage() {
@@ -68,11 +68,11 @@ export default function HomePage() {
         if ( answer === '' && editorState === EditorState.Question ) return
         if ( editorState === EditorState.Question) {
           setTotal((total) => total + 1)
-          if ( answer === question?.answer ) {
+          if ( answer === question?.roman ) {
             setCorrect((correct) => correct + 1)
             setQuestionList(
               (questionList) =>
-              questionList.filter((item) => item.answer !== question.answer)
+              questionList.filter((item) => item.chinese !== question.chinese)
             )
             setEditorState(EditorState.AnswerCorrect)
             playCorrect()
@@ -168,7 +168,7 @@ export default function HomePage() {
             <div className="flex flex-col gap-8 items-center justify-center">
               <h1 className="text-8xl font-medium">
                 <ruby>
-                  {question.question}
+                  {question.chinese}
                   <rt className="text-lg text-gray-800">
                   {editorState === EditorState.AnswerIncorrect ? (
                     <>{question.pinyin}</>
