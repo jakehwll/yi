@@ -1,26 +1,10 @@
 'use client';
 
 import { Check, Inbox, ThumbsUp, X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import useSound from 'use-sound';
-
-interface Question {
-  chinese: string
-  roman: string | string[],
-  pinyin: string | string[]
-}
-
-interface History {
-  question: Question
-  correct: boolean
-}
-
-enum EditorState {
-  Question,
-  AnswerCorrect,
-  AnswerIncorrect,
-  Completed
-}
+import { TextInput } from "~/components/challenge/TextInput";
+import { type Question, EditorState, type History } from "~/utils/types";
 
 const LANGUAGE: 'en' | 'zh' = 'en'
 
@@ -41,12 +25,9 @@ export default function HomePage() {
   const [editorState, setEditorState] = useState<EditorState>(EditorState.Question)
   const [questionList, setQuestionList] = useState<Question[]>([])
   const [question, setQuestion] = useState<Question | undefined>()
-  const [answer, setAnswer] = useState<string>('')
-
-  const inputRef = useRef<HTMLInputElement>(null)
 
   const [history, setHistory] = useState<History[]>([])
-  const [total, correct, incorrect] = [
+  const [total, correct] = [
     history.length,
     history.filter((item) => item.correct === true).length,
     history.filter((item) => item.correct === false).length,
@@ -69,60 +50,51 @@ export default function HomePage() {
     setQuestion(getRandomQuestion())
   }, [])
 
-  useEffect(() => {
-    const callback = (event: KeyboardEvent) => {
-      if ( event.key === 'Enter' ) {
-        if ( inputRef.current === null ) return
-        if ( answer === '' && editorState === EditorState.Question ) return
-        if ( editorState === EditorState.Question) {
-          if ( question === undefined ) return
-          if ( answer === question.roman ) {
-            setHistory((history) => [
-              ...history, 
-              {
-                question: question,
-                correct: true
-              }
-            ])
-            setQuestionList(
-              (questionList) =>
-              questionList.filter((item) => item.chinese !== question.chinese)
-            )
-            setEditorState(EditorState.AnswerCorrect)
-            playCorrect()
-          } else {
-            setHistory((history) => [
-              ...history, 
-              {
-                question: question,
-                correct: false
-              }
-            ])
-            setEditorState(EditorState.AnswerIncorrect)
-            setAnswer('')
-            playIncorrect()
-          }
-        } else {
-          if ( questionList.length > 0 ) {
-            setQuestion(getRandomQuestion())
-            setEditorState(EditorState.Question)
-            setAnswer('')
-          } else {
-            setEditorState(EditorState.Completed)
-            playFanfare()
-          }
-        }
-      } 
-    }
-    window.addEventListener('keydown', callback)
-    return () => window.removeEventListener('keydown', callback)
-  })
+  const onCorrect = () => {
+    if ( !question ) return
+    setHistory((history) => [
+      ...history, 
+      {
+        question: question,
+        correct: true
+      }
+    ])
+    setQuestionList(
+      (questionList) =>
+      questionList.filter((item) => item.chinese !== question.chinese)
+    )
+    setEditorState(EditorState.AnswerCorrect)
+    playCorrect()
+  }
 
-  useEffect(() => {
-    if ( editorState !== EditorState.Question )
-      return
-    inputRef.current?.focus()
-  }, [editorState])
+  const onIncorrect = () => {
+    if ( !question ) return
+    setHistory((history) => [
+      ...history, 
+      {
+        question: question,
+        correct: false
+      }
+    ])
+    setEditorState(EditorState.AnswerIncorrect)
+    playIncorrect()
+  }
+
+  const onNext = () => {
+    if ( questionList.length > 0 ) {
+      setQuestion(getRandomQuestion())
+      setEditorState(EditorState.Question)
+    } else {
+      setEditorState(EditorState.Completed)
+    playFanfare()
+    }
+  }
+
+  const challengeProps = {
+    onCorrect,
+    onIncorrect,
+    onNext
+  }
 
   if ( editorState === EditorState.Completed ) {
     return (
@@ -142,7 +114,6 @@ export default function HomePage() {
             setQuestionList(QUESTIONS)
             setQuestion(getRandomQuestion())
             setEditorState(EditorState.Question)
-            setAnswer('')
           }}
         >
           Review Again
@@ -181,34 +152,14 @@ export default function HomePage() {
       </header>
       <section className="flex flex-col flex-1">
         <div className="container mx-auto py-12 px-4 flex items-center justify-center">
-          {/* component */}
           {question && (
-            <div className="flex flex-col gap-8 items-center justify-center">
-              <h1 className="text-8xl font-medium">
-                <ruby>
-                  {question.chinese}
-                  <rt className="text-lg text-gray-800">
-                  {editorState === EditorState.AnswerIncorrect ? (
-                    <>{question.pinyin}</>
-                  ) : (
-                    <>&nbsp;</>
-                  )}
-                  </rt>
-                </ruby>
-              </h1>
-              <input 
-                type="text" 
-                autoFocus
-                className={"py-4 px-4 border-2 rounded-lg text-2xl text-center w-fullshadow-sm transition-all duration-500 placeholder:text-gray-200 border-gray-200 focus:ring-blue-500 focus:border-blue-500 focus:ring-2"}
-                placeholder={LANGUAGE === 'zh' ? '拼音' : 'Pinyin'}
-                value={answer}
-                onChange={(event) => setAnswer(event.target.value)}
-                disabled={editorState !== EditorState.Question}
-                ref={inputRef}
-              />
-            </div>
+            <TextInput
+              question={question}
+              editorState={editorState}
+              language={LANGUAGE}
+              {...challengeProps}
+            />
           )}
-          {/* /component */}
         </div>
       </section>
       {(editorState === EditorState.AnswerCorrect || editorState === EditorState.AnswerIncorrect) && (
