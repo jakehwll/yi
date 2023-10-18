@@ -8,7 +8,7 @@ interface InputProps extends ChallengeProps {
   language: string;
 }
 
-export const TextInput = ({
+export const AudioInput = ({
   question,
   editorState,
   language,
@@ -16,11 +16,14 @@ export const TextInput = ({
   onIncorrect,
   onNext,
 }: InputProps) => {
+  const [ready, setReady] = useState(false)
   const [answer, setAnswer] = useState<string>("");
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const [play] = useSound(question.data.audio ?? "", {
+  const [play] = useSound(question.data.audio ?? '', {
     interrupt: true,
+    onload: () => setReady(true),
+    onend: () => setReady(false)
   });
 
   useEffect(() => {
@@ -30,13 +33,17 @@ export const TextInput = ({
   }, [editorState, inputRef]);
 
   useEffect(() => {
+    if ( !ready ) return
+    play()
+  }, [ready, play])
+
+  useEffect(() => {
     const callback = (event: KeyboardEvent) => {
       switch (event.key) {
         case "Enter":
           if (answer === "" && editorState === EditorState.Question) return;
           if (editorState === EditorState.Question) {
             if (question === undefined) return;
-            play();
             if (
               Array.isArray(question.data[question.answer_type])
                 ? (question.data[question.answer_type] ?? []).includes(answer)
@@ -60,18 +67,17 @@ export const TextInput = ({
 
   return (
     <div className="flex flex-col items-center justify-center gap-8">
-      <h1 className="text-8xl font-medium">
-        <ruby>
-          {question.data.chinese}
-          <rt className="text-lg text-gray-800">
-            {editorState !== EditorState.Question ? (
+      <button type="button" className="text-4xl" onClick={() => play()}>play</button>
+      {editorState !== EditorState.Question && (
+        <h1 className="text-8xl font-medium">
+          <ruby>
+            {question.data.chinese}
+            <rt className="text-lg text-gray-800">
               <>{Array.isArray(question.data.pinyin) ? question.data.pinyin.join(', ') : question.data.pinyin}</>
-            ) : (
-              <>&nbsp;</>
-            )}
-          </rt>
-        </ruby>
-      </h1>
+            </rt>
+          </ruby>
+        </h1> 
+      )}
       <input
         type="text"
         autoFocus
