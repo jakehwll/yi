@@ -10,10 +10,14 @@
     "format": "prettier . --write"
   },
   "dependencies": {
+    "@lucia-auth/adapter-prisma": "^3.0.2",
+    "@prisma/client": "^5.4.2",
     "@t3-oss/env-nextjs": "^0.7.0",
     "classcat": "^5.0.4",
+    "lucia": "^2.7.1",
     "lucide-react": "^0.287.0",
     "next": "^13.5.4",
+    "prisma": "^5.4.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "use-sound": "^4.0.1",
