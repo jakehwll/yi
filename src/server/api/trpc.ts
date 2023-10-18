@@ -4,17 +4,20 @@ import superjson from "superjson";
 import { ZodError } from "zod";
 
 interface CreateContextOptions {
+  method: Request["method"],
   headers: Headers;
 }
 
 export const createInnerTRPCContext = (opts: CreateContextOptions) => {
   return {
+    method: opts.method,
     headers: opts.headers,
   };
 };
 
 export const createTRPCContext = (opts: { req: NextRequest }) => {
   return createInnerTRPCContext({
+    method: opts.req.method,
     headers: opts.req.headers,
   });
 };
