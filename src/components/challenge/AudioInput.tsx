@@ -82,7 +82,7 @@ export const AudioInput = ({
         type="text"
         autoFocus
         className={
-          "w-fullshadow-sm rounded-lg border-2 border-gray-200 px-4 py-4 text-center text-2xl transition-all duration-500 placeholder:text-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
+          "w-fullshadow-sm rounded-lg border border-gray-200 px-4 py-4 text-center text-2xl transition-all duration-500 placeholder:text-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500"
         }
         placeholder={language === "zh" ? "拼音" : "Pinyin"}
         value={answer}

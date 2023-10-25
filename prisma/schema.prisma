@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgres"
   url      = env("DATABASE_URL")
 }
 
@@ -34,4 +34,34 @@ model Key {
   user            User    @relation(references: [id], fields: [user_id], onDelete: Cascade)
 
   @@index([user_id])
+}
+
+enum DefinitionType {
+  Vocabulary
+}
+
+model Definition {
+  id         String         @id @unique @default(cuid())
+  definition DefinitionType
+  data       Json
+  challenges Challenge[]
+}
+
+enum ChallengeType {
+  Text
+  Audio
+}
+
+enum Language {
+  Chinese
+  Roman
+}
+
+model Challenge {
+  id           String     @id @unique @default(cuid())
+  type         ChallengeType
+  input        Language
+  output       Language
+  definition   Definition @relation(fields: [definitionId], references: [id])
+  definitionId String
 }

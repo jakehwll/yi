@@ -1,0 +1,18 @@
+volumes:
+  pg_data:
+    name: pg_data
+
+services:
+  postgres:
+    container_name: postgres
+    image: postgres
+    restart: always
+    user: postgres
+    environment:
+      - POSTGRES_PASSWORD=nihao
+      - POSTGRES_USER=nihao
+      - POSTGRES_DB=nihao
+    ports:
+      - "5433:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
