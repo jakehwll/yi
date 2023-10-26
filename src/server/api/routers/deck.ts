@@ -12,15 +12,19 @@ export const deck = t.router({
         id: z.string()
       })
     )
-    .query(async ({ input: { id } }) => {
+    .mutation(async ({ input: { id } }) => {
       const deck = await prisma.deck.findFirst({
         where: {
           id: id
         },
         include: {
-          DecksChallenge: {
+          DeckChallenge: {
             include: {
-              challenge: true
+              challenge: {
+                include: {
+                  definition: true
+                }
+              }
             }
           }
         }
@@ -29,7 +33,7 @@ export const deck = t.router({
       if ( !deck ) throw new TRPCError({ code: "NOT_FOUND", message: "Deck not found" })
 
       return {
-        challenges: deck.DecksChallenge.map( dc => dc.challenge )
+        challenges: deck.DeckChallenge.map( dc => dc.challenge )
       }
     }),
 });

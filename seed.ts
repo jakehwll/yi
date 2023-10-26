@@ -79,10 +79,143 @@ const VOCABULARY = [
 const CHALLENGES = [
   {
     id: "clo258dvv0000zo6x77v2c35d",
-    type: ChallengeType.Text,
-    input: Language.Chinese,
-    output: Language.Roman,
+    type: ChallengeType.text,
+    input: Language.chinese,
+    output: Language.roman,
     definitionId: "clo258dvv0000zo6x77v2c35d",
+  },
+  {
+    id: "clo258dvv0001zo6xnwfhnmbv",
+    type: ChallengeType.text,
+    input: Language.chinese,
+    output: Language.roman,
+    definitionId: "clo258dvv0001zo6xnwfhnmbv",
+  },
+  {
+    id: "clo258dvv0002zo6xrgk2hsqk",
+    type: ChallengeType.text,
+    input: Language.chinese,
+    output: Language.roman,
+    definitionId: "clo258dvv0002zo6xrgk2hsqk",
+  },
+  {
+    id: "clo258dvv0003zo6xocyojtxq",
+    type: ChallengeType.text,
+    input: Language.chinese,
+    output: Language.roman,
+    definitionId: "clo258dvv0003zo6xocyojtxq",
+  },
+  {
+    id: "clo258dvv0004zo6xey5rbjgu",
+    type: ChallengeType.text,
+    input: Language.chinese,
+    output: Language.roman,
+    definitionId: "clo258dvv0004zo6xey5rbjgu",
+  },
+  {
+    id: "clo258dvv0005zo6xota6dbcy",
+    type: ChallengeType.text,
+    input: Language.chinese,
+    output: Language.roman,
+    definitionId: "clo258dvv0005zo6xota6dbcy",
+  },
+  {
+    id: "clo258dvv0006zo6x9hnxyzun",
+    type: ChallengeType.text,
+    input: Language.chinese,
+    output: Language.roman,
+    definitionId: "clo258dvv0006zo6x9hnxyzun",
+  },
+  {
+    id: "clo258dvv0007zo6xzg93datt",
+    type: ChallengeType.text,
+    input: Language.chinese,
+    output: Language.roman,
+    definitionId: "clo258dvv0007zo6xzg93datt",
+  },
+  {
+    id: "clo258dvv0008zo6xsyfd2yr5",
+    type: ChallengeType.text,
+    input: Language.chinese,
+    output: Language.roman,
+    definitionId: "clo258dvv0008zo6xsyfd2yr5",
+  },
+  {
+    id: "clo258dvv0009zo6xe87fsox3",
+    type: ChallengeType.text,
+    input: Language.chinese,
+    output: Language.roman,
+    definitionId: "clo258dvv0009zo6xe87fsox3",
+  },
+  {
+    id: "clo258dvv0000zo6x77v2c36d",
+    type: ChallengeType.audio,
+    input: Language.chinese,
+    output: Language.roman,
+    definitionId: "clo258dvv0000zo6x77v2c35d",
+  },
+  {
+    id: "clo258dvv0011zo6xnwfhnmbv",
+    type: ChallengeType.audio,
+    input: Language.chinese,
+    output: Language.roman,
+    definitionId: "clo258dvv0001zo6xnwfhnmbv",
+  },
+  {
+    id: "clo258dvv0002zo6xrgk3hsqk",
+    type: ChallengeType.audio,
+    input: Language.chinese,
+    output: Language.roman,
+    definitionId: "clo258dvv0002zo6xrgk2hsqk",
+  },
+  {
+    id: "clo258dvv0013zo6xocyojtxq",
+    type: ChallengeType.audio,
+    input: Language.chinese,
+    output: Language.roman,
+    definitionId: "clo258dvv0003zo6xocyojtxq",
+  },
+  {
+    id: "clo258dvv0004zo6xey6rbjgu",
+    type: ChallengeType.audio,
+    input: Language.chinese,
+    output: Language.roman,
+    definitionId: "clo258dvv0004zo6xey5rbjgu",
+  },
+  {
+    id: "clo258dvv0005zo4xota6dbcy",
+    type: ChallengeType.audio,
+    input: Language.chinese,
+    output: Language.roman,
+    definitionId: "clo258dvv0005zo6xota6dbcy",
+  },
+  {
+    id: "clo258dvv0006zo7x9hnxyzun",
+    type: ChallengeType.audio,
+    input: Language.chinese,
+    output: Language.roman,
+    definitionId: "clo258dvv0006zo6x9hnxyzun",
+  },
+  {
+    id: "clo258dvv0207zo6xzg93datt",
+    type: ChallengeType.audio,
+    input: Language.chinese,
+    output: Language.roman,
+    definitionId: "clo258dvv0007zo6xzg93datt",
+  },
+  {
+    id: "clo258dvv0018zo6xsyfd2yr5",
+    type: ChallengeType.audio,
+    input: Language.chinese,
+    output: Language.roman,
+    definitionId: "clo258dvv0008zo6xsyfd2yr5",
+  },
+  {
+    id: "clo258dvv0009zo6xe87fsox3",
+    type: ChallengeType.audio,
+    input: Language.chinese,
+    output: Language.roman,
+    definitionId: "clo258dvv0009zo6xe87fsox3",
   },
 ];
 
@@ -109,15 +242,6 @@ async function main() {
       }
     })
   })
-  CHALLENGES.forEach(async (v) => {
-    await prisma.challenge.upsert({
-      where: {
-        id: v.id,
-      },
-      create: v,
-      update: v,
-    });
-  })
   await prisma.deck.upsert({
     where: {
       id: DECK.id,
@@ -125,22 +249,40 @@ async function main() {
     create: DECK,
     update: DECK,
   });
-  await prisma.deckChallenge.upsert({
-    where: {
-      deckId_challengeId: {
-        deckId: DECK.id,
-        challengeId: "clo258dvv0000zo6x77v2c35d",
+  // CHALLENGES.forEach(async (v) => {
+  //   const beep = await prisma.challenge.upsert({
+  //     where: {
+  //       id: v.id,
+  //     },
+  //     create: v,
+  //     update: v,
+  //   });
+  // })
+  await Promise.all(CHALLENGES.map(async (v) => {
+    await prisma.challenge.upsert({
+      where: {
+        id: v.id,
       },
-    },
-    create: {
-      deckId: DECK.id,
-      challengeId: "clo258dvv0000zo6x77v2c35d",
-    },
-    update: {
-      deckId: DECK.id,
-      challengeId: "clo258dvv0000zo6x77v2c35d",
-    },
-  });
+      create: v,
+      update: v,
+    });
+    await prisma.deckChallenge.upsert({
+      where: {
+        deckId_challengeId: {
+          deckId: DECK.id,
+          challengeId: v.id,
+        }
+      },
+      create: {
+        deckId: DECK.id,
+        challengeId: v.id,
+      },
+      update: {
+        deckId: DECK.id,
+        challengeId: v.id,
+      }
+    })
+  }))
 }
 
 await main()

@@ -37,9 +37,10 @@ export const TextInput = ({
           if (editorState === EditorState.Question) {
             if (question === undefined) return;
             play();
+            const correctAnswer = question.data[question.answer_type]
             if (
-              Array.isArray(question.data[question.answer_type])
-                ? (question.data[question.answer_type] ?? []).includes(answer)
+              Array.isArray(correctAnswer)
+                ? correctAnswer.includes(answer)
                 : answer === question.data[question.answer_type]
             ) {
               onCorrect();

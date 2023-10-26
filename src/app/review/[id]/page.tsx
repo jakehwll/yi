@@ -6,38 +6,11 @@ import { useEffect, useState } from "react";
 import useSound from "use-sound";
 import { AudioInput } from "~/components/challenge/AudioInput";
 import { TextInput } from "~/components/challenge/TextInput";
+import { api } from "~/utils/api";
 import { type Question, EditorState, type History, type Vocabulary } from "~/utils/types";
 
-const LANGUAGE: "en" | "zh" = "en";
-
-const VOCABULARY: Record<string, Vocabulary> = {
-  '1': { chinese: "一", roman: "yi", pinyin: "yī", audio: "/assets/1.mp3" },
-  '2': { chinese: "二", roman: ["er", "liang"], pinyin: ["èr", "liǎng"], audio: "/assets/2.mp3" },
-  '3': { chinese: "三", roman: "san", pinyin: "sān", audio: "/assets/3.mp3" },
-  '4': { chinese: "四", roman: "si", pinyin: "sì", audio: "/assets/4.mp3" },
-  '5': { chinese: "五", roman: "wu", pinyin: "wǔ", audio: "/assets/5.mp3" },
-  '6': { chinese: "六", roman: "liu", pinyin: "liù", audio: "/assets/6.mp3" },
-  '7': { chinese: "七", roman: "qi", pinyin: "qī", audio: "/assets/7.mp3" },
-  '8': { chinese: "八", roman: "ba", pinyin: "bā", audio: "/assets/8.mp3" },
-  '9': { chinese: "九", roman: "jiu", pinyin: "jiǔ", audio: "/assets/9.mp3" },
-  '10': { chinese: "十", roman: "shi", pinyin: "shí", audio: "/assets/10.mp3" },
-}
-
-const DEFAULT_VOCAB: Vocabulary = {
-  chinese: "",
-  roman: "",
-  pinyin: "",
-  audio: ""
-}
 
 const QUESTIONS: Question[] = [
-  {
-    id: 'vocab_1',
-    challenge_type: "text",
-    question_type: "chinese",
-    answer_type: "roman",
-    data: VOCABULARY['1'] ?? DEFAULT_VOCAB,
-  },
   // {
   //   id: 'vocab_2',
   //   challenge_type: "text",
@@ -188,22 +161,45 @@ export default function HomePage() {
     history.filter((item) => item.correct === false).length,
   ];
 
+  const challengeMutation = api.deck.getChallenges.useMutation()
+
   const [playCorrect] = useSound("/assets/correct.wav");
   const [playIncorrect] = useSound("/assets/incorrect.wav");
   const [playFanfare] = useSound("/assets/fanfare.wav");
 
-  const getRandomQuestion = () => {
-    if (questionList.length > 0)
+  const getRandomQuestion = (input?: Question[]) => {
+    if ( input ) {
+      return input[Math.floor(Math.random() * input.length) || 0];
+    } else {
       return questionList[Math.floor(Math.random() * questionList.length) || 0];
-    else {
-      return QUESTIONS[Math.floor(Math.random() * QUESTIONS.length) || 0];
     }
   };
 
   useEffect(() => {
-    setQuestionList(QUESTIONS);
-    setQuestion(getRandomQuestion());
-  }, []);
+    challengeMutation.mutateAsync({ id: "clo6dhqup0001zoc2zb24yue0" })
+      .then((res) => {
+        setQuestionList(
+          res.challenges.map((v) => ({
+            id: v.id,
+            challenge_type: v.type,
+            question_type: v.input,
+            answer_type: v.output,
+            data: v.definition.data as Vocabulary,
+          }))
+        )
+        setQuestion(
+          getRandomQuestion(
+            res.challenges.map((v) => ({
+              id: v.id,
+              challenge_type: v.type,
+              question_type: v.input,
+              answer_type: v.output,
+              data: v.definition.data as Vocabulary,
+            })) as Question[]
+          )
+        )
+      })
+  }, [])
 
   const onCorrect = () => {
     if (!question) return;

@@ -1,26 +1,19 @@
-export enum ChallengeType {
-  text,
-  audio
-}
-
 export enum QuestionKeysType {
-  chinese,
-  roman,
-  pinyin,
-  audio,
+  Chinese,
+  Roman,
+  Pinyin,
+  Audio,
 }
 
-export type Vocabulary = {
-  [key in keyof typeof QuestionKeysType]: string | string[] | undefined;
-}
+export type Vocabulary = Record<string, string>;
 
 export type Question = {
   id: string,
   //
-  challenge_type: keyof typeof ChallengeType;
+  challenge_type: string;
   //
-  question_type: keyof typeof QuestionKeysType;
-  answer_type: keyof typeof QuestionKeysType;
+  question_type: string;
+  answer_type: string;
   //
   data: Vocabulary;
 };

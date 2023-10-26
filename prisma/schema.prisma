@@ -49,13 +49,13 @@ model Definition {
 }
 
 enum ChallengeType {
-  Text
-  Audio
+  text
+  audio
 }
 
 enum Language {
-  Chinese
-  Roman
+  chinese
+  roman
 }
 
 model Challenge {
