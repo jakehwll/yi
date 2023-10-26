@@ -45,6 +45,7 @@ model Definition {
   definition DefinitionType
   data       Json
   challenges Challenge[]
+  decksId    String?
 }
 
 enum ChallengeType {
@@ -58,10 +59,27 @@ enum Language {
 }
 
 model Challenge {
-  id           String     @id @unique @default(cuid())
-  type         ChallengeType
-  input        Language
-  output       Language
-  definition   Definition @relation(fields: [definitionId], references: [id])
-  definitionId String
+  id            String          @id @unique @default(cuid())
+  type          ChallengeType
+  input         Language
+  output        Language
+  definition    Definition      @relation(fields: [definitionId], references: [id])
+  definitionId  String
+  DeckChallenge DeckChallenge[]
+}
+
+model Deck {
+  id            String          @id @unique @default(cuid())
+  name          String
+  description   String?
+  DeckChallenge DeckChallenge[]
+}
+
+model DeckChallenge {
+  deck        Deck      @relation(fields: [deckId], references: [id])
+  deckId      String
+  challenge   Challenge @relation(fields: [challengeId], references: [id])
+  challengeId String
+
+  @@id([deckId, challengeId])
 }

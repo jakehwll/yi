@@ -1,5 +1,5 @@
 import { createTRPCRouter } from "~/server/api/trpc";
-import { authentication } from "./routers/auth";
+import { deck } from "./routers/deck";
 
 /**
  * This is the primary router for your server.
@@ -7,7 +7,7 @@ import { authentication } from "./routers/auth";
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
-  auth: authentication,
+  deck
 });
 
 // export type definition of API
