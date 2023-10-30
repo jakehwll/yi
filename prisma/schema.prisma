@@ -37,7 +37,7 @@ model Key {
 }
 
 enum DefinitionType {
-  Vocabulary
+  vocabulary
 }
 
 model Definition {
@@ -54,15 +54,20 @@ enum ChallengeType {
 }
 
 enum Language {
+  english
   chinese
   roman
+}
+
+enum InputType {
+  meaning
+  reading
 }
 
 model Challenge {
   id            String          @id @unique @default(cuid())
   type          ChallengeType
-  input         Language
-  output        Language
+  input         InputType
   definition    Definition      @relation(fields: [definitionId], references: [id])
   definitionId  String
   DeckChallenge DeckChallenge[]

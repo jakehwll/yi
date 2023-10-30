@@ -21,8 +21,7 @@ const Page = () => {
                             {[
                                 'Dashboard', 
                                 // 'Review', 
-                                // 'Learn', 
-                                'Content', 
+                                // 'Learn',
                                 // 'Practice'
                             ].map((item, index) => (
                                 <li key={item} className="flex items-center gap-2">
@@ -48,7 +47,7 @@ const Page = () => {
                             <div className="grid grid-cols-1 lg:grid-cols-3">
                                 <article className="flex justify-between items-center py-4 px-2">
                                     <main className="flex flex-col">
-                                        <a href={"/review/counting"} className="flex items-center gap-2">
+                                        <a href={"/deck/counting"} className="flex items-center gap-2">
                                             <div className="text-lg font-medium leading-relaxed">Counting (1-10)</div>
                                             <div className="text-gray-600">
                                                 算数
@@ -60,7 +59,7 @@ const Page = () => {
                                     </main>
                                     <aside>
                                         <a
-                                            href="/review/counting"
+                                            href="/deck/counting"
                                             className="rounded-xl border border-emerald-600 bg-emerald-500 px-4 py-3 text-sm font-medium text-white shadow-sm transition-all"
                                         >
                                             Study

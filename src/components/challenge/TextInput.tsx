@@ -5,18 +5,17 @@ import { type ChallengeProps, EditorState, type Question } from "~/utils/types";
 interface InputProps extends ChallengeProps {
   question: Question;
   editorState: EditorState;
-  language: string;
 }
 
 export const TextInput = ({
   question,
   editorState,
-  language,
   onCorrect,
   onIncorrect,
   onNext,
 }: InputProps) => {
   const [answer, setAnswer] = useState<string>("");
+  const [wrongType, setWrongType] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const [play] = useSound(question.data.audio ?? "", {
@@ -29,6 +28,11 @@ export const TextInput = ({
     setAnswer("");
   }, [editorState, inputRef]);
 
+  const alternateKey = 
+    question.answer_type === 'meaning'
+      ? 'reading'
+      : 'meaning'
+  
   useEffect(() => {
     const callback = (event: KeyboardEvent) => {
       switch (event.key) {
@@ -36,16 +40,32 @@ export const TextInput = ({
           if (answer === "" && editorState === EditorState.Question) return;
           if (editorState === EditorState.Question) {
             if (question === undefined) return;
-            play();
+
             const correctAnswer = question.data[question.answer_type]
+            
+            const alternate = question.data[alternateKey]
+            
             if (
               Array.isArray(correctAnswer)
                 ? correctAnswer.includes(answer)
                 : answer === question.data[question.answer_type]
             ) {
+              play();
               onCorrect();
+              setWrongType(false)
             } else {
-              onIncorrect();
+              if ( 
+                Array.isArray(alternate)
+                  ? alternate.includes(answer)
+                  : answer === alternate
+              ) {
+                setWrongType(true)
+              } else {
+                play();
+                onIncorrect();
+                setWrongType(false)
+              }
+
               setAnswer("");
             }
           } else {
@@ -61,30 +81,42 @@ export const TextInput = ({
 
   return (
     <div className="flex flex-col items-center justify-center gap-8">
-      <h1 className="text-8xl font-medium">
-        <ruby>
-          {question.data.chinese}
-          <rt className="text-lg text-gray-800">
-            {editorState !== EditorState.Question ? (
-              <>{Array.isArray(question.data.pinyin) ? question.data.pinyin.join(', ') : question.data.pinyin}</>
-            ) : (
-              <>&nbsp;</>
-            )}
-          </rt>
-        </ruby>
-      </h1>
-      <input
-        type="text"
-        autoFocus
-        className={
-          "w-fullshadow-sm rounded-lg border border-gray-200 px-4 py-4 text-center text-2xl transition-all duration-500 placeholder:text-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500"
-        }
-        placeholder={language === "zh" ? "拼音" : "Pinyin"}
-        value={answer}
-        onChange={(event) => setAnswer(event.target.value)}
-        disabled={editorState !== EditorState.Question}
-        ref={inputRef}
-      />
+      <div className="flex flex-col items-center justify-center gap-4">
+        <div className="text-center py-1 px-2 font-medium text-sm uppercase bg-gray-300 rounded text-gray-900">
+          {question.answer_type}
+        </div>
+        <h1 className="text-8xl font-medium">
+          <ruby>
+            {question.data[question.question_type]}
+            <rt className="text-lg text-gray-800">
+              {editorState !== EditorState.Question ? (
+                <>{Array.isArray(question.data.pinyin) ? question.data.pinyin.join(', ') : question.data.pinyin}</>
+              ) : (
+                <>&nbsp;</>
+              )}
+            </rt>
+          </ruby>
+        </h1>
+      </div>
+      <div className="relative">
+        {wrongType && (
+          <div className="absolute top-[100%] left-[50%] -translate-x-1/2 py-1 px-4 w-full text-center bg-black/10 rounded my-2 font-medium text-sm">
+            Oops, we want the {question.answer_type}, not the {alternateKey}.
+          </div>
+        )}
+        <input
+          type="text"
+          autoFocus
+          className={
+            "w-fullshadow-sm rounded-lg border border-gray-200 px-4 py-4 text-center text-2xl transition-all duration-500 placeholder:text-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500"
+          }
+          placeholder={question.answer_type === 'meaning' ? "Input" : "输入"}
+          value={answer}
+          onChange={(event) => setAnswer(event.target.value)}
+          disabled={editorState !== EditorState.Question}
+          ref={inputRef}
+        />
+      </div>
     </div>
   );
 };

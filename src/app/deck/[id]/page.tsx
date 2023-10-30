@@ -8,151 +8,17 @@ import { AudioInput } from "~/components/challenge/AudioInput";
 import { TextInput } from "~/components/challenge/TextInput";
 import { api } from "~/utils/api";
 import { type Question, EditorState, type History, type Vocabulary } from "~/utils/types";
+import { useParams } from 'next/navigation';
 
-
-const QUESTIONS: Question[] = [
-  // {
-  //   id: 'vocab_2',
-  //   challenge_type: "text",
-  //   question_type: "chinese",
-  //   answer_type: "roman",
-  //   data: VOCABULARY['2'] ?? DEFAULT_VOCAB,
-  // },
-  // {
-  //   id: 'vocab_3',
-  //   challenge_type: "text",
-  //   question_type: "chinese",
-  //   answer_type: "roman",
-  //   data: VOCABULARY['3'] ?? DEFAULT_VOCAB,
-  // },
-  // {
-  //   id: 'vocab_4',
-  //   challenge_type: "text",
-  //   question_type: "chinese",
-  //   answer_type: "roman",
-  //   data: VOCABULARY['4'] ?? DEFAULT_VOCAB
-  // },
-  // {
-  //   id: 'vocab_5',
-  //   challenge_type: "text",
-  //   question_type: "chinese",
-  //   answer_type: "roman",
-  //   data: VOCABULARY['5'] ?? DEFAULT_VOCAB,
-  // },
-  // {
-  //   id: 'vocab_6',
-  //   challenge_type: "text",
-  //   question_type: "chinese",
-  //   answer_type: "roman",
-  //   data: VOCABULARY['6'] ?? DEFAULT_VOCAB,
-  // },
-  // {
-  //   id: 'vocab_7',
-  //   challenge_type: "text",
-  //   question_type: "chinese",
-  //   answer_type: "roman",
-  //   data: VOCABULARY['7'] ?? DEFAULT_VOCAB,
-  // },
-  // {
-  //   id: 'vocab_8',
-  //   challenge_type: "text",
-  //   question_type: "chinese",
-  //   answer_type: "roman",
-  //   data: VOCABULARY['8'] ?? DEFAULT_VOCAB,
-  // },
-  // {
-  //   id: 'vocab_9',
-  //   challenge_type: "text",
-  //   question_type: "chinese",
-  //   answer_type: "roman",
-  //   data: VOCABULARY['9'] ?? DEFAULT_VOCAB,
-  // },
-  // {
-  //   id: 'vocab_10',
-  //   challenge_type: "text",
-  //   question_type: "chinese",
-  //   answer_type: "roman",
-  //   data: VOCABULARY['10'] ?? DEFAULT_VOCAB,
-  // },
-  // {
-  //   id: 'sound_1',
-  //   challenge_type: "audio",
-  //   question_type: "chinese",
-  //   answer_type: "roman",
-  //   data: VOCABULARY['1'] ?? DEFAULT_VOCAB,
-  // },
-  // {
-  //   id: 'sound_2',
-  //   challenge_type: "audio",
-  //   question_type: "chinese",
-  //   answer_type: "roman",
-  //   data: VOCABULARY['2'] ?? DEFAULT_VOCAB,
-  // },
-  // {
-  //   id: 'sound_3',
-  //   challenge_type: "audio",
-  //   question_type: "chinese",
-  //   answer_type: "roman",
-  //   data: VOCABULARY['3'] ?? DEFAULT_VOCAB,
-  // },
-  // {
-  //   id: 'sound_4',
-  //   challenge_type: "audio",
-  //   question_type: "chinese",
-  //   answer_type: "roman",
-  //   data: VOCABULARY['4'] ?? DEFAULT_VOCAB,
-  // },
-  // {
-  //   id: 'sound_5',
-  //   challenge_type: "audio",
-  //   question_type: "chinese",
-  //   answer_type: "roman",
-  //   data: VOCABULARY['5'] ?? DEFAULT_VOCAB,
-  // },
-  // {
-  //   id: 'sound_6',
-  //   challenge_type: "audio",
-  //   question_type: "chinese",
-  //   answer_type: "roman",
-  //   data: VOCABULARY['6'] ?? DEFAULT_VOCAB,
-  // },
-  // {
-  //   id: 'sound_7',
-  //   challenge_type: "audio",
-  //   question_type: "chinese",
-  //   answer_type: "roman",
-  //   data: VOCABULARY['7'] ?? DEFAULT_VOCAB,
-  // },
-  // {
-  //   id: 'sound_8',
-  //   challenge_type: "audio",
-  //   question_type: "chinese",
-  //   answer_type: "roman",
-  //   data: VOCABULARY['8'] ?? DEFAULT_VOCAB,
-  // },
-  // {
-  //   id: 'sound_9',
-  //   challenge_type: "audio",
-  //   question_type: "chinese",
-  //   answer_type: "roman",
-  //   data: VOCABULARY['9'] ?? DEFAULT_VOCAB,
-  // },
-  // {
-  //   id: 'sound_10',
-  //   challenge_type: "audio",
-  //   question_type: "chinese",
-  //   answer_type: "roman",
-  //   data: VOCABULARY['10'] ?? DEFAULT_VOCAB,
-  // },
-];
-
-export default function HomePage() {
+export default function Deck() {
+  const { id } = useParams()
   const router = useRouter()
   const [editorState, setEditorState] = useState<EditorState>(
     EditorState.Question,
   );
   const [questionList, setQuestionList] = useState<Question[]>([]);
   const [question, setQuestion] = useState<Question | undefined>();
+  const [allQuestions, setAllQuestions] = useState<Question[]>([]);
 
   const [history, setHistory] = useState<History[]>([]);
   const [total, correct] = [
@@ -176,24 +42,24 @@ export default function HomePage() {
   };
 
   useEffect(() => {
-    challengeMutation.mutateAsync({ id: "clo6dhqup0001zoc2zb24yue0" })
+    challengeMutation.mutateAsync({ id: id?.toString() ?? '' })
       .then((res) => {
-        setQuestionList(
-          res.challenges.map((v) => ({
-            id: v.id,
-            challenge_type: v.type,
-            question_type: v.input,
-            answer_type: v.output,
-            data: v.definition.data as Vocabulary,
-          }))
-        )
+        const questions = res.challenges.map((v) => ({
+          id: v.id,
+          challenge_type: v.type,
+          question_type: 'chinese',
+          answer_type: v.input,
+          data: v.definition.data as Vocabulary,
+        }))
+        setAllQuestions(questions)
+        setQuestionList(questions)
         setQuestion(
           getRandomQuestion(
             res.challenges.map((v) => ({
               id: v.id,
               challenge_type: v.type,
-              question_type: v.input,
-              answer_type: v.output,
+              question_type: 'chinese',
+              answer_type: v.input,
               data: v.definition.data as Vocabulary,
             })) as Question[]
           )
@@ -271,7 +137,7 @@ export default function HomePage() {
             className="rounded-xl text-sm border border-emerald-600 bg-emerald-500 px-6 py-3 font-medium text-white shadow-sm transition-all"
             onClick={() => {
               setHistory([]);
-              setQuestionList(QUESTIONS);
+              setQuestionList(allQuestions);
               setQuestion(getRandomQuestion());
               setEditorState(EditorState.Question);
             }}
@@ -292,7 +158,6 @@ export default function HomePage() {
             {...challengeProps}
             question={question}
             editorState={editorState}
-            language="en"
           />
         );
       case "audio":
@@ -301,7 +166,6 @@ export default function HomePage() {
             {...challengeProps}
             question={question}
             editorState={editorState}
-            language="en"
           />
         )
       default:
@@ -325,8 +189,8 @@ export default function HomePage() {
               }
               style={{
                 width: `${
-                  (100 / QUESTIONS.length) *
-                  (QUESTIONS.length - questionList.length)
+                  (100 / allQuestions.length) *
+                  (allQuestions.length - questionList.length)
                 }%`,
               }}
             />
